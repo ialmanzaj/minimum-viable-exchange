@@ -5,7 +5,7 @@ const contracts = {
       name: "localhost",
       contracts: {
         Balloons: {
-          address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+          address: "0x07882Ae1ecB7429a84f1D53048d35c4bB2056877",
           abi: [
             {
               inputs: [],
@@ -285,7 +285,7 @@ const contracts = {
           ],
         },
         DEX: {
-          address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+          address: "0x22753E4264FDDc6181dc7cce468904A80a363E44",
           abi: [
             {
               inputs: [
@@ -300,25 +300,113 @@ const contracts = {
             },
             {
               anonymous: false,
-              inputs: [],
+              inputs: [
+                {
+                  indexed: false,
+                  internalType: "address",
+                  name: "swapper",
+                  type: "address",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "ethInput",
+                  type: "uint256",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "tokenOutput",
+                  type: "uint256",
+                },
+              ],
               name: "EthToTokenSwap",
               type: "event",
             },
             {
               anonymous: false,
-              inputs: [],
+              inputs: [
+                {
+                  indexed: false,
+                  internalType: "address",
+                  name: "liquidityProvider",
+                  type: "address",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "tokensInput",
+                  type: "uint256",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "ethInput",
+                  type: "uint256",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "liquidityMinted",
+                  type: "uint256",
+                },
+              ],
               name: "LiquidityProvided",
               type: "event",
             },
             {
               anonymous: false,
-              inputs: [],
+              inputs: [
+                {
+                  indexed: false,
+                  internalType: "address",
+                  name: "liquidityRemover",
+                  type: "address",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "tokensOutput",
+                  type: "uint256",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "ethOutput",
+                  type: "uint256",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "liquidityWithdrawn",
+                  type: "uint256",
+                },
+              ],
               name: "LiquidityRemoved",
               type: "event",
             },
             {
               anonymous: false,
-              inputs: [],
+              inputs: [
+                {
+                  indexed: false,
+                  internalType: "address",
+                  name: "swapper",
+                  type: "address",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "tokensInput",
+                  type: "uint256",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "ethOutput",
+                  type: "uint256",
+                },
+              ],
               name: "TokenToEthSwap",
               type: "event",
             },
@@ -389,18 +477,37 @@ const contracts = {
             {
               inputs: [
                 {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              name: "liquidity",
+              outputs: [
+                {
                   internalType: "uint256",
-                  name: "xInput",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "dx",
                   type: "uint256",
                 },
                 {
                   internalType: "uint256",
-                  name: "xReserves",
+                  name: "x",
                   type: "uint256",
                 },
                 {
                   internalType: "uint256",
-                  name: "yReserves",
+                  name: "y",
                   type: "uint256",
                 },
               ],
@@ -419,7 +526,7 @@ const contracts = {
               inputs: [
                 {
                   internalType: "uint256",
-                  name: "tokenInput",
+                  name: "tokens",
                   type: "uint256",
                 },
               ],
@@ -432,6 +539,19 @@ const contracts = {
                 },
               ],
               stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "totalLiquidity",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
               type: "function",
             },
             {
