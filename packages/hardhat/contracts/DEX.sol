@@ -83,17 +83,13 @@ contract DEX {
     function price(uint256 dx, uint256 x, uint256 y) public view returns (uint256 yOutput) {
         // amount of tokens to exchange, add 0.03 fee for DEX
         uint256 xInputwithFee = dx * 997;
-        console.log("xInputwithFee", xInputwithFee);
         // 1000000000
         uint256 inputReserve = xInputwithFee * y;
-        console.log("inputReserve", inputReserve);
         // increasing the precision
         // (1000000 * 1000) + 1000000000
         uint256 outputReserve = (x * 1000) + xInputwithFee;
-        console.log("outputReserve", outputReserve);
         // (1000000 * 1000) + 1000000000
         uint256 dy = inputReserve / outputReserve;
-        console.log(dy);
         return dy;
     }
 
