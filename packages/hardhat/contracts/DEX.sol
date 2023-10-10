@@ -109,14 +109,12 @@ contract DEX {
      * @notice sends Ether to DEX in exchange for $BAL
      */
     function ethToToken() public payable returns (uint256 tokenOutput) {
+        require(msg.value > 0, "you should send some eth");
         uint256 token_reserve = token.balanceOf(address(this));
-        console.log("token_reserve", token_reserve);
         uint256 eth_reserve = address(this).balance - msg.value;
-        console.log("eth_reserve", eth_reserve);
         uint256 tokenOutput = price(msg.value, eth_reserve, token_reserve);
-        console.log("tokenOutput", tokenOutput);
         require(token.transfer(msg.sender, tokenOutput));
-        emit EthToTokenSwap(msg.sender, msg.value, tokenOutput);
+        emit EthToTokenSwap(msg.sender, tokenOutput, msg.value);
         return tokenOutput;
     }
 
@@ -124,6 +122,7 @@ contract DEX {
      * @notice sends $BAL tokens to DEX in exchange for Ether
      */
     function tokenToEth(uint256 tokens) public returns (uint256 ethOutput) {
+        require(tokens > 0, "you should send some tokens");
         uint256 token_reserve = token.balanceOf(address(this));
         uint256 ethOutput = price(tokens, token_reserve, address(this).balance);
         payable(msg.sender).transfer(ethOutput);
@@ -139,17 +138,14 @@ contract DEX {
      * NOTE: Equal parts of both assets will be removed from the user's wallet with respect to the price outlined by the AMM.
      */
     function deposit() public payable returns (uint256 tokensDeposited) {
+        require(msg.value > 0, "you should send some eth");
         // current eth reserve
         uint256 eth_reserve = address(this).balance - msg.value;
         // $BAL reserve
-        console.log("eth_reserve", eth_reserve);
         uint256 token_reserve = token.balanceOf(address(this));
         // $BAL amount
-        console.log("token_reserve", token_reserve);
         uint256 token_amount = msg.value * token_reserve / eth_reserve + 1;
-        console.log("token_amount", token_amount);
         uint256 tokensDeposited = msg.value * totalLiquidity / eth_reserve;
-        console.log("tokensDeposited", tokensDeposited);
         liquidity[msg.sender] = liquidity[msg.sender] + tokensDeposited;
         totalLiquidity = totalLiquidity + tokensDeposited;
         require(token.transferFrom(msg.sender, address(this), token_amount));
