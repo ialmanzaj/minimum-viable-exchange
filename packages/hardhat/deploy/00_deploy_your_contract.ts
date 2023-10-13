@@ -47,7 +47,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const dex = await hre.ethers.getContract("DEX", deployer);
 
   // paste in your front-end address here to get 10 balloons on deploy:
-  await balloons.transfer(deployer, "" + 20e18);
+  await balloons.transfer("0xA11C4421dA52dfC980a0eaBa8Dc89fFAA29dB608", "" + 20e18);
 
   // uncomment to init DEX on deploy:
 

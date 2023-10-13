@@ -312,6 +312,7 @@ describe("🚩 Challenge 4: ⚖️ 🪙 DEX", () => {
         expect(liquidity_end, "Total liquidity should increase").to.equal(
           liquidity_start.add(ethers.utils.parseEther("5")),
         );
+        
         const user_lp = await dexContract.getLiquidity(user2.address);
         console.log("\t", " ⚖️ User's liquidity provided should be 5. LP:", ethers.utils.formatEther(user_lp));
         expect(user_lp.toString(), "User's liquidity provided should be 5.").to.equal(ethers.utils.parseEther("5"));

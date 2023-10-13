@@ -80,7 +80,7 @@ contract DEX {
      *         Constranct product formula -> x * y = k where x and y are the reserves
      *         dy = (y * 997) * dx / (x + 997 * dx)
      */
-    function price(uint256 dx, uint256 x, uint256 y) public view returns (uint256 yOutput) {
+    function price(uint256 dx, uint256 x, uint256 y) public pure returns (uint256 yOutput) {
         // amount of tokens to exchange, add 0.03 fee for DEX
         uint256 xInputwithFee = dx * 997;
         // 1000000000
@@ -99,7 +99,9 @@ contract DEX {
      * NOTE: if you are using a mapping liquidity, then you can use `return liquidity[lp]` to get the liquidity for a user.
      * NOTE: if you will be submitting the challenge make sure to implement this function as it is used in the tests.
      */
-    function getLiquidity(address lp) public view returns (uint256) {}
+    function getLiquidity(address lp) public view returns (uint256) {
+        return liquidity[lp];
+    }
 
     /**
      * @notice sends Ether to DEX in exchange for $BAL
@@ -121,7 +123,8 @@ contract DEX {
         require(tokens > 0, "you should send some tokens");
         uint256 token_reserve = token.balanceOf(address(this));
         uint256 ethOutput = price(tokens, token_reserve, address(this).balance);
-        payable(msg.sender).transfer(ethOutput);
+        (bool sent,) = msg.sender.call{value: ethOutput}("");
+        require(sent, "tokenToEth: revert in transferring eth to you!");
         require(token.transferFrom(msg.sender, address(this), tokens));
         emit TokenToEthSwap(msg.sender, tokens, ethOutput);
         return ethOutput;
@@ -129,23 +132,26 @@ contract DEX {
 
     /**
      * @notice allows deposits of $BAL and $ETH to liquidity pool
-     * NOTE: parameter is the msg.value sent with this function call. That amount is used to determine the amount of $BAL needed as well and taken from the depositor.
+     * NOTE: parameter is the msg.value sent with this function call.
+     *          That amount is used to determine the amount of $BAL needed as well and taken from the depositor.
      * NOTE: user has to make sure to give DEX approval to spend their tokens on their behalf by calling approve function prior to this function call.
      * NOTE: Equal parts of both assets will be removed from the user's wallet with respect to the price outlined by the AMM.
      */
     function deposit() public payable returns (uint256 tokensDeposited) {
         require(msg.value > 0, "you should send some eth");
         // current eth reserve
-        uint256 eth_reserve = address(this).balance - msg.value;
+        uint256 ethReserve = address(this).balance - msg.value;
+
         // $BAL reserve
         uint256 token_reserve = token.balanceOf(address(this));
         // $BAL amount
-        uint256 token_amount = msg.value * token_reserve / eth_reserve + 1;
-        uint256 tokensDeposited = msg.value * totalLiquidity / eth_reserve;
-        liquidity[msg.sender] = liquidity[msg.sender] + tokensDeposited;
-        totalLiquidity = totalLiquidity + tokensDeposited;
-        require(token.transferFrom(msg.sender, address(this), token_amount));
-        emit LiquidityProvided(msg.sender, token_amount, msg.value, tokensDeposited);
+        uint256 tokenDeposit = msg.value * token_reserve / ethReserve + 1;
+        uint256 liquidityMinted = msg.value * totalLiquidity / ethReserve;
+
+        liquidity[msg.sender] = liquidity[msg.sender] + liquidityMinted;
+        totalLiquidity = totalLiquidity + liquidityMinted;
+        require(token.transferFrom(msg.sender, address(this), tokenDeposit));
+        emit LiquidityProvided(msg.sender, liquidityMinted, msg.value, tokenDeposit);
         return tokensDeposited;
     }
 
@@ -155,20 +161,26 @@ contract DEX {
      */
     function withdraw(uint256 amount) public returns (uint256 eth_amount, uint256 token_amount) {
         // token reserve
-        uint256 token_reserve = token.balanceOf(address(this));
+        uint256 tokenReserve = token.balanceOf(address(this));
+
         // calculate eth amount to get out
-        uint256 eth_amount = amount * address(this).balance / totalLiquidity;
+        uint256 ethWithdrawn = amount * address(this).balance / totalLiquidity;
+
         // calculate the tokens amount to get out
-        uint256 token_amount = amount * token_reserve / totalLiquidity;
+        uint256 tokenWithdrawn = amount * tokenReserve / totalLiquidity;
+
         // removing liquidity from user total
-        liquidity[msg.sender] = liquidity[msg.sender] - eth_amount;
+        liquidity[msg.sender] = liquidity[msg.sender] - ethWithdrawn;
+
         // removing liquidity from total
-        totalLiquidity = totalLiquidity - eth_amount;
+        totalLiquidity = totalLiquidity - ethWithdrawn;
+
         // transfer out user eth amount
-        payable(msg.sender).transfer(eth_amount);
+        (bool sent,) = msg.sender.call{value: ethWithdrawn}("");
+        require(sent, "tokenToEth: revert in transferring eth to you!");
         // transfer out user token amount
-        require(token.transfer(msg.sender, token_amount));
-        emit LiquidityRemoved(msg.sender, amount, eth_amount, token_amount);
-        return (eth_amount, token_amount);
+        require(token.transfer(msg.sender, tokenWithdrawn));
+        emit LiquidityRemoved(msg.sender, amount, ethWithdrawn, tokenWithdrawn);
+        return (ethWithdrawn, tokenWithdrawn);
     }
 }

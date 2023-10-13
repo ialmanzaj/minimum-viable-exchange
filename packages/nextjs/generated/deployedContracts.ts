@@ -5,7 +5,7 @@ const contracts = {
       name: "localhost",
       contracts: {
         Balloons: {
-          address: "0x8A93d247134d91e0de6f96547cB0204e5BE8e5D8",
+          address: "0x8B190573374637f144AC8D37375d97fd84cBD3a0",
           abi: [
             {
               inputs: [],
@@ -285,7 +285,7 @@ const contracts = {
           ],
         },
         DEX: {
-          address: "0x40918Ba7f132E0aCba2CE4de4c4baF9BD2D7D849",
+          address: "0x9385556B571ab92bf6dC9a0DbD75429Dd4d56F91",
           abi: [
             {
               inputs: [
@@ -519,7 +519,7 @@ const contracts = {
                   type: "uint256",
                 },
               ],
-              stateMutability: "view",
+              stateMutability: "pure",
               type: "function",
             },
             {
@@ -869,7 +869,7 @@ const contracts = {
           ],
         },
         DEX: {
-          address: "0x0C2707F3637B98D447A4DB82f02674d5cAeBbDC1",
+          address: "0x5bDC39e6b3Eb67C46d991A7bDb3e2107Dfa61B6B",
           abi: [
             {
               inputs: [
@@ -1103,7 +1103,7 @@ const contracts = {
                   type: "uint256",
                 },
               ],
-              stateMutability: "view",
+              stateMutability: "pure",
               type: "function",
             },
             {
